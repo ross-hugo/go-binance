@@ -8,9 +8,9 @@ import (
 )
 
 var (
-	baseURL         = "wss://stream.binance.com:9443/ws"
-	baseFutureURL   = "wss://fstream.binance.com/ws"
-	combinedBaseURL = "wss://stream.binance.com:9443/stream?streams="
+	baseURL         = "wss://stream.binance.us:9443/ws"
+	baseFutureURL   = "wss://fstream.binance.us/ws"
+	combinedBaseURL = "wss://stream.binance.us:9443/stream?streams="
 	// WebsocketTimeout is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
 	WebsocketTimeout = time.Second * 60
 	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability

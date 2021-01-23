@@ -59,7 +59,7 @@ type ContractType string
 
 // Endpoints
 const (
-	baseApiMainUrl    = "https://fapi.binance.com"
+	baseApiMainUrl    = "https://fapi.binance.us"
 	baseApiTestnetUrl = "https://testnet.binancefuture.com"
 )
 
