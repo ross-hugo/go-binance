@@ -82,7 +82,7 @@ func keepAlive(c *websocket.Conn, timeout time.Duration) {
 			if err != nil {
 				return
 			} else {
-				fmt.Println("Whoa something happened " + err.Error())
+				fmt.Println(err)
 			}
 			<-ticker.C
 			if time.Since(lastResponse) > timeout {
