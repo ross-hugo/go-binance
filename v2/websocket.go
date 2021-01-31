@@ -80,9 +80,8 @@ func keepAlive(c *websocket.Conn, timeout time.Duration) {
 			deadline := time.Now().Add(10 * time.Second)
 			err := c.WriteControl(websocket.PingMessage, []byte{}, deadline)
 			if err != nil {
-				return
-			} else {
 				fmt.Println(err)
+				return
 			}
 			<-ticker.C
 			if time.Since(lastResponse) > timeout {
