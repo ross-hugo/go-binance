@@ -37,7 +37,8 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 		// closed by the client.
 		defer close(doneC)
 		if WebsocketKeepalive {
-			keepAlive(c, WebsocketTimeout)
+			rossKeepAlive(c, WebsocketTimeout)
+			// keepAlive(c, WebsocketTimeout)
 		}
 		// Wait for the stopC channel to be closed.  We do that in a
 		// separate goroutine because ReadMessage is a blocking
@@ -65,6 +66,17 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 	return
 }
 
+func rossKeepAlive(c *websocket.Conn, timeout time.Duration) {
+	go func() {
+		deadline := time.Now().Add(timeout)
+		err := c.WriteControl(websocket.PongMessage, []byte{}, deadline)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}()
+}
+
 func keepAlive(c *websocket.Conn, timeout time.Duration) {
 	ticker := time.NewTicker(timeout)
 
@@ -80,7 +92,6 @@ func keepAlive(c *websocket.Conn, timeout time.Duration) {
 			deadline := time.Now().Add(10 * time.Second)
 			err := c.WriteControl(websocket.PingMessage, []byte{}, deadline)
 			if err != nil {
-				fmt.Println(err)
 				return
 			}
 			<-ticker.C
