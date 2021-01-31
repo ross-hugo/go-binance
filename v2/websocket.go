@@ -1,6 +1,7 @@
 package binance
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -77,9 +78,11 @@ func keepAlive(c *websocket.Conn, timeout time.Duration) {
 		defer ticker.Stop()
 		for {
 			deadline := time.Now().Add(10 * time.Second)
-			err := c.WriteControl(websocket.PongMessage, []byte{}, deadline)
+			err := c.WriteControl(websocket.PingMessage, []byte{}, deadline)
 			if err != nil {
 				return
+			} else {
+				fmt.Println("Whoa something happened " + err.Error())
 			}
 			<-ticker.C
 			if time.Since(lastResponse) > timeout {
