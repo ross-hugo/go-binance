@@ -67,12 +67,17 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 }
 
 func rossKeepAlive(c *websocket.Conn, timeout time.Duration) {
+	ticker := time.NewTicker(timeout)
 	go func() {
-		deadline := time.Now().Add(timeout)
-		err := c.WriteControl(websocket.PongMessage, []byte{}, deadline)
-		if err != nil {
-			fmt.Println(err)
-			return
+		for {
+			fmt.Println("Entered Keep Alive")
+			deadline := time.Now().Add(timeout)
+			err := c.WriteControl(websocket.PongMessage, []byte{}, deadline)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			<-ticker.C
 		}
 	}()
 }
