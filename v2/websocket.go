@@ -70,7 +70,6 @@ func rossKeepAlive(c *websocket.Conn, timeout time.Duration) {
 	ticker := time.NewTicker(timeout)
 	go func() {
 		for {
-			fmt.Println("Entered Keep Alive")
 			deadline := time.Now().Add(timeout)
 			err := c.WriteControl(websocket.PongMessage, []byte{}, deadline)
 			if err != nil {
