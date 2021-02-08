@@ -87,7 +87,8 @@ func rossKeepAlive(c *websocket.Conn, timeout time.Duration) {
 			<-ticker.C
 			
 			if time.Since(lastResponse) > timeout {
-				fmt.Println(time.Now().Unix() - lastResponse.Unix())
+				fmt.Println(time.Now().Sub(lastResponse), timeout, time.Now().Unix() - lastResponse.Unix())
+				// fmt.Println()
 			}
 		}
 	}()
