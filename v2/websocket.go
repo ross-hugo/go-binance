@@ -69,9 +69,9 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 func rossKeepAlive(c *websocket.Conn, timeout time.Duration) {
 	ticker := time.NewTicker(timeout)
 
-	lastResponse := time.Now().Unix()
+	lastResponse := time.Now()
 	c.SetPongHandler(func(msg string) error {
-		lastResponse = time.Now().Unix()
+		lastResponse = time.Now()
 		return nil
 	})
 
@@ -85,7 +85,10 @@ func rossKeepAlive(c *websocket.Conn, timeout time.Duration) {
 				return
 			}
 			<-ticker.C
-			fmt.Println("%i", time.Now().Unix() - lastResponse)
+			
+			if time.Since(lastResponse) > timeout {
+				fmt.Println(time.Now().Unix() - lastResponse.Unix())
+			}
 		}
 	}()
 }
