@@ -37,7 +37,7 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 		// closed by the client.
 		defer close(doneC)
 		if WebsocketKeepalive {
-			rossKeepAlive(c, WebsocketTimeout)
+			rossKeepAlive(c, WebsocketTimeout, cfg)
 			// keepAlive(c, WebsocketTimeout)
 		}
 		// Wait for the stopC channel to be closed.  We do that in a
@@ -66,7 +66,7 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 	return
 }
 
-func rossKeepAlive(c *websocket.Conn, timeout time.Duration) {
+func rossKeepAlive(c *websocket.Conn, timeout time.Duration, cfg *WsConfig) {
 	ticker := time.NewTicker(timeout)
 
 	lastResponse := time.Now()
@@ -88,7 +88,13 @@ func rossKeepAlive(c *websocket.Conn, timeout time.Duration) {
 			
 			if time.Since(lastResponse) > timeout + (10 * time.Second) {
 				fmt.Println(time.Now().Sub(lastResponse), timeout, time.Now().Unix() - lastResponse.Unix())
-				// fmt.Println()
+				c.Close()
+				// c, _, err = websocket.DefaultDialer.Dial(cfg.Endpoint, nil)
+				// c.SetPongHandler(func(msg string) error {
+				// 	lastResponse = time.Now()
+				// 	return nil
+				// })
+				return
 			}
 		}
 	}()
