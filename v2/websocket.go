@@ -37,7 +37,7 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 		// closed by the client.
 		defer close(doneC)
 		if WebsocketKeepalive {
-			rossKeepAlive(c, WebsocketTimeout, cfg)
+			rossKeepAlive(c, WebsocketTimeout)
 			// keepAlive(c, WebsocketTimeout)
 		}
 		// Wait for the stopC channel to be closed.  We do that in a
@@ -66,36 +66,36 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 	return
 }
 
-func rossKeepAlive(c *websocket.Conn, timeout time.Duration, cfg *WsConfig) {
+func rossKeepAlive(c *websocket.Conn, timeout time.Duration) {
 	ticker := time.NewTicker(timeout)
 
-	lastResponse := time.Now()
-	c.SetPongHandler(func(msg string) error {
-		lastResponse = time.Now()
-		return nil
-	})
+	// lastResponse := time.Now()
+	// c.SetPongHandler(func(msg string) error {
+	// 	lastResponse = time.Now()
+	// 	return nil
+	// })
 
 	go func() {
 		defer ticker.Stop()
 		for {
 			deadline := time.Now().Add(timeout)
-			err := c.WriteControl(websocket.PingMessage, []byte{}, deadline)
+			err := c.WriteControl(websocket.PongMessage, []byte{}, deadline)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			<-ticker.C
 			
-			if time.Since(lastResponse) > timeout + (10 * time.Second) {
-				fmt.Println(time.Now().Sub(lastResponse), timeout, time.Now().Unix() - lastResponse.Unix())
-				c.Close()
-				// c, _, err = websocket.DefaultDialer.Dial(cfg.Endpoint, nil)
-				// c.SetPongHandler(func(msg string) error {
-				// 	lastResponse = time.Now()
-				// 	return nil
-				// })
-				return
-			}
+			// if time.Since(lastResponse) > timeout + (10 * time.Second) {
+			// 	fmt.Println(time.Now().Sub(lastResponse), timeout, time.Now().Unix() - lastResponse.Unix())
+			// 	c.Close()
+			// 	// c, _, err = websocket.DefaultDialer.Dial(cfg.Endpoint, nil)
+			// 	// c.SetPongHandler(func(msg string) error {
+			// 	// 	lastResponse = time.Now()
+			// 	// 	return nil
+			// 	// })
+			// 	return
+			// }
 		}
 	}()
 }
