@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 var (
@@ -266,6 +268,30 @@ type WsAggTradeEvent struct {
 
 // WsTradeHandler handle websocket trade event
 type WsTradeHandler func(event *WsTradeEvent)
+
+func SocketTradeServe(symbol string) (*websocket.Conn, error) {
+	endpoint := fmt.Sprintf("%s/%s@trade", baseURL, strings.ToLower(symbol))
+	cfg := newWsConfig(endpoint)
+
+	c, _, err := websocket.DefaultDialer.Dial(cfg.Endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func ReadSocket(c *websocket.Conn) (*WsTradeEvent){
+	_, message, err := c.ReadMessage()
+	if err != nil {
+		fmt.Println("Was not able to read message")
+	}
+	event := new(WsTradeEvent)
+	err = json.Unmarshal(message, event)
+	if err != nil {
+		fmt.Println("Was not able to Unmarshal socket information")
+	}
+	return event
+}
 
 // WsTradeServe serve websocket handler with a symbol
 func WsTradeServe(symbol string, handler WsTradeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
