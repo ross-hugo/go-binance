@@ -47,8 +47,10 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 		go func() {
 			select {
 			case <-stopC:
+				fmt.Println("Connection stopped (StopC)...")
 				silent = true
 			case <-doneC:
+				fmt.Println("Connection closed (DoneC)...")
 			}
 			c.Close()
 		}()
